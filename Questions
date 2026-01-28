@@ -1,1 +1,162 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,textwidth=150mm,top=30mm,textheight=237mm]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts} 
+\usepackage{mathdots}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{listings}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{scalerel,stackengine}
+\usepackage{tikz-cd}
 
+
+\stackMath
+\newcommand\reallywidehat[1]{%
+\savestack{\tmpbox}{\stretchto{%
+  \scaleto{%
+    \scalerel*[\widthof{\ensuremath{#1}}]{\kern-.05pt\bigwedge\kern-.05pt}%
+    {\rule[-\textheight/2]{1ex}{\textheight}}%WIDTH-LIMITED BIG WEDGE
+  }{\textheight}% 
+}{0.5ex}}%
+\stackon[1pt]{#1}{\tmpbox}%
+}
+\parskip 1ex
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}[definition]{Example}
+\newtheorem{examples}[definition]{Examples}
+
+\theoremstyle{plain}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+
+\newenvironment{claim}[1]{\par\noindent\underline{Claim:}\space#1}{}
+\newenvironment{claimproof}[1]{\par\noindent\textit{Proof:}\space#1}{\hfill $\square$}
+
+\usepackage{mathtools}
+\usepackage{bm}
+\DeclarePairedDelimiterX{\inp}[2]{\langle}{\rangle}{#1, #2}
+\usepackage[backend=bibtex,style=alphabetic,natbib=true]{biblatex}
+\addbibresource{References.bib}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+
+\makeatletter
+\newcommand{\superimpose}[2]{{%
+  \ooalign{%
+    \hfil$\m@th#1\@firstoftwo#2$\hfil\cr
+    \hfil$\m@th#1\@secondoftwo#2$\hfil\cr
+  }%
+}}
+
+\newcommand\blankpage{% comando pagina vuota
+    \clearpage
+    \null
+    \thispagestyle{empty}%
+    \clearpage
+}
+
+\makeatother
+
+\begin{document}
+
+\begin{enumerate}
+    \item I am unsure how to complete the proof that for arbitrary sets $A,B$ the set $\{p\in P:p\vdash A=B\}$ belongs to $\text{RO}(P)$. 
+    I can show sethood and upwards closure but can not show the density property.\\
+    My proof so far:\\
+    \\
+    The formula characterizing $\{p\in P:p\vdash A=B\}$ is of the form
+    \[
+    (\forall q.((p,q)\in\leq\rightarrow\forall x.(x,q)\in A\equiv(x,q)\in B)).
+    \]
+    Define the stratification
+    \begin{align*}
+    t:V\rightarrow\mathbb{N}, t(x)=t(q)=t(p)=t((x,q))=t(p,q)=&n,\\
+    t(A)=t(B)=t(\leq)=t(P)=&n+1,
+    \end{align*}
+    for some $n\in\mathbb{N}$. 
+    So $\{p\in P:p\vdash A=B\}$ is a set.\\
+    \\
+    Let $p\in\{p\in P:p\vdash A=B\}$, $q\geq p, r\geq q$. 
+    Since $(P,\leq)$ is a poset, $r\geq p$. 
+    By definition of $p\vdash A=B$, $\forall x.r\in A[x]\equiv r\in B[x]$. 
+    So $q\vdash A=B$.\\
+    \\
+    Let $p\in P$ satisfy
+    \[
+    (\forall q\geq p.(\exists r\geq q.r\in \{p\in P:p\vdash A=B\})).
+    \]
+    Assume $p\not\vdash A=B$. 
+    Then there exists w.l.o.g. a $q\geq p$ and a set $x$ s.t. $(x,q)\in A$ and $(x,q)\not\in B$. 
+    By assumption there exists an $r\geq q$ s.t. $r\vdash A=B$. 
+    So
+    \[
+    (x,r)\in A\equiv(x,r)\in B.
+    \]
+    I tried to construct a counterexample:\\
+    \\
+    We work in a model $\mathcal{M}$ of NFU+Counting. Let
+    \[
+    P:=\{r\}\cup\{p\}\cup\{q_n:n\in\mathbb{N}\}
+    \]
+    and
+    \[
+    \leq :=(p,r)\cup\{(p,q_n):n\in\mathbb{N}\}\cup\{(q_n,r):n\in\mathbb{N}\}\cup\{(x,x):x\in P\}. 
+    \]
+    By the axiom of counting, $\mathbb{N}$ is strongly Cantorian. 
+    So $\{q_n:n\in\mathbb{N}\}$ is strongly Cantorian. 
+    So $P$ and $\leq$ are strongly Cantorian.\\
+    Let $x_0$ be a set and define:
+    \begin{align*}
+    &A:=\{(x_0,q_n):n\text{ even}\}\cup\{(x_0,r)\},\\
+    &B:=\{(x_0,q_n):n\text{ odd}\}\cup\{(x_0,r)\}.
+    \end{align*}
+    Since $\mathbb{N}$ is strongly Cantorian, the definitions of $A$ and $B$ are stratified. 
+    So $A$ and $B$ are sets. 
+    Then
+    \begin{align*}
+    &q_n\in A[x_0]\text{ iff }n\text{ is even},&
+    &q_n\in B[x_0]\text{ iff }n\text{ is odd},\\
+    &r\in A[x_0],&
+    &r\in B[x_0],\\
+    &p\not\in A[x_0],&
+    &p\not\in B[x_0].\\
+    \end{align*}
+    And for any $x\neq x_0$, $A[x]=\emptyset=B[x]$.\\
+    So for all $q\geq r$ (i.e. only $r$) and all sets $x$, $q\in A[x]\equiv q\in B[x]$. 
+    For any $n\in\mathbb{N}$ $n$ even, $q_n\in A[x_0]$ and $q_n\not\in B[x_0]$. 
+    For any $n\in\mathbb{N}$ $n$ odd, $q_n\not\in A[x_0]$ and $q_n\in B[x_0]$.\\
+    So $r\vdash A=B$, for any $n\in\mathbb{N}$, $q_n\not\vdash A=B$ and $p\not\vdash A=B$.
+    So
+    \[
+    \{p\in P:p\vdash A=B\}=\{r\}.
+    \]
+    So $(\forall q\geq p.(\exists r\geq q.r\in\{p\in P:r\vdash A=B\}))$ but $p\not\in\{p\in P:p\vdash A=B\}$.
+    So $\{p\in P:p\vdash A=B\}\not\in\text{RO}(P)$.\\
+    \\
+    Could you tell me whether this example is correct, and if not, where the argument fails?
+    \item I am unsure how the new model is meant to be constructed in detail. 
+    Is the final model obtained using a generic filter $G$, analogously to ZFC?
+    \item The notes say that “names which do not respect the new identity criterion are reinterpreted as urelements.” 
+    In what ways can an object fail to respect the new identity or extensionality, and how is such an object treated in the resulting structure?
+    \item Suppose we work in a model $\mathcal{M}\models\text{NFU+Counting}$, and forcing with a strongly Cantorian poset $(P,\leq)\in\mathcal{M}$ produces a model $\mathcal{M}_1\models\text{NFU+Counting+$\phi$}$. 
+    Then forcing over $\mathcal{M}_1$ with another strongly Cantorian poset $(P',\leq')\in\mathcal{M}$ would require that $P'$ and $\leq'$ are still strongly Cantorian in $\mathcal{M}_1$. 
+    Are there any preservation results showing that strong Cantorianity of sets or relations is maintained under forcing in NF(U)?
+    \item Are there any published, worked-out examples of forcing in NF(U)  that derive an independence or consistency result? 
+    If so, could you recommend references?
+\end{enumerate}
+
+\end{document}
