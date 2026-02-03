@@ -115,7 +115,11 @@ A^{\bot}:=\{p\in P:(\forall q\geq p.q\not\in A)\}.
 
 \begin{theorem}
 Let $A\in\text{RO}(P)$, $\mathcal{A}\subseteq\text{RO}(P)$. 
-Then it holds that $A^{\bot}\in\text{RO}(P)$ and $\bigcap\mathcal{A}\in\text{RO}(P)$.
+Then it holds that
+\begin{enumerate}
+    \item $A^{\bot}\in\text{RO}(P)\text{ and }$
+    \item $\bigcap\mathcal{A}\in\text{RO}(P)$.
+\end{enumerate}
 \end{theorem}
 \begin{proof}
 \begin{enumerate}
@@ -123,7 +127,7 @@ Then it holds that $A^{\bot}\in\text{RO}(P)$ and $\bigcap\mathcal{A}\in\text{RO}
     \\
     Let $p\in P$ s.t. $p$ satisfies $(\forall q\geq p.(\exists r\geq q.r\in A^{\bot}))$, $q\geq p$.  
     So there exists an $r\geq q$ s.t. $r\not\in A$. 
-    By condition 1, $q\not\in A$. 
+    By upwards closure of $A$, $q\not\in A$. 
     So $p\in A^{\bot}$.
     \item Let $p\in\bigcap\mathcal{A}$, $p\leq q$, $A\in\mathcal{A}$. 
     Since $p\in A$ and $p\leq q$, $q\in A$. 
@@ -165,73 +169,42 @@ Let $A$ and $B$ be sets, then $\{p\in P:p\vdash A=B\}$ is a set and in $\text{RO
 \end{theorem}
 \begin{proof}
 The formula characterizing $\{p\in P:p\vdash A=B\}$ is of the form
-\[
-(\forall q\geq p.(\forall x.(x,q)\in A\equiv(x,q)\in B)).
-\]
+\begin{align*}
+&(\forall q\geq p.(\forall x.(x,q)\in A\equiv(x,q)\in B))\\
+\text{equivalently }&(\forall q.((p,q)\in\leq\rightarrow \forall x.((x,q)\in A\equiv(x,q)\in B))).
+\end{align*}
 Define the stratification
 \begin{align*}
-t:V\rightarrow\mathbb{N}, t(x)=t(q)=t(p)=t((x,q))=&n,\\
-t(A)=t(B)=&n+1,
+t:V\rightarrow\mathbb{N}, t(x)=t(q)=t(p)=t((x,q))=t((p,q))=&n,\\
+t(A)=t(B)=t(\leq)=&n+1,
 \end{align*}
 for some $n\in\mathbb{N}$. 
 So $\{p\in P:p\vdash A=B\}$ is a set.\\
 \\
 Let $p\in\{p\in P:p\vdash A=B\}$, $q\geq p, r\geq q$. 
 Since $(P,\leq)$ is a poset, $r\geq p$. 
-By definition of $p\vdash A=B$, $\forall x.r\in A[x]\equiv r\in A[x]$. 
-So $q\vdash A=B$.\\
+By definition of $p\vdash A=B$, $\forall x.r\in A[x]\equiv r\in B[x]$. 
+Since $r$ was chosen arbitrarily, $q\vdash A=B$.\\
 \\
 Let $p\in P$ satisfy
 \[
 (\forall q\geq p.(\exists r\geq q.r\in \{p\in P:p\vdash A=B\})).
 \]
 Assume $p\not\vdash A=B$. 
-Then there exists w.l.o.g. a $q\geq p$ and a set $x$ s.t. $(x,q)\in A$ and $(x,q)\not\in B$. 
-By assumption there exists an $r\geq q$ s.t. $r\vdash A=B$. 
-So
+Then there exists w.l.o.g. a $q\geq p$ and a set $x$ s.t. $q\in A[x]$ and $q\not\in B[x]$. 
+Since $B[x]$ is regular open and $q\not\in B[x]$, there exists an $s\geq q$ s.t. $s\not\in B[x]$ and $(\forall t\geq s.t\not\in B[x])$. 
+Since $(P,\leq)$ is a poset, $s\geq p$.
+So there exists an $r\geq s$ s.t. $r\vdash A=B$. 
+So 
 \[
-(x,r)\in A\equiv(x,r)\in B.
+r\in A[x]\equiv r\in B[x].
 \]
-\underline{Don't know how to continue}\\
+Since $r\geq s$, $r\not\in B[x]$. 
+Since $r\geq q$, $q\in A[x]$ and $A[x]$ is upwards closed, $r\in A[x]$. 
+Contradiction to $r\vdash A=B$. 
+So $p\vdash A=B$.\\
 \\
-\underline{Counterexample}: We work in a model $\mathcal{M}$ of NFU+Counting. Let
-\[
-P:=\{r\}\cup\{p\}\cup\{q_n:n\in\mathbb{N}\}
-\]
-and
-\[
-\leq :=(p,r)\cup\{(p,q_n):n\in\mathbb{N}\}\cup\{(q_n,r):n\in\mathbb{N}\}\cup\{(x,x):x\in P\}. 
-\]
-By the axiom of counting, $\mathbb{N}$ is strongly Cantorian. 
-So $\{q_n:n\in\mathbb{N}\}$ is strongly Cantorian. 
-So $P$ and $\leq$ are strongly Cantorian.\\
-Let $x_0$ be a set and define:
-\begin{align*}
-&A:=\{(x_0,q_n):n\text{ even}\}\cup\{(x_0,r)\},\\
-&B:=\{(x_0,q_n):n\text{ odd}\}\cup\{(x_0,r)\}.
-\end{align*}
-Since $\mathbb{N}$ is strongly Cantorian, the definitions of $A$ and $B$ are stratified. 
-So $A$ and $B$ are sets. 
-Then
-\begin{align*}
-&q_n\in A[x_0]\text{ iff }n\text{ is even},&
-&q_n\in B[x_0]\text{ iff }n\text{ is odd},\\
-&r\in A[x_0],&
-&r\in B[x_0],\\
-&p\not\in A[x_0],&
-&p\not\in B[x_0].\\
-\end{align*}
-And for any $x\neq x_0$, $A[x]=\emptyset=B[x]$.\\
-So for all $q\geq r$ (i.e. only $r$) and all sets $x$, $q\in A[x]\equiv q\in B[x]$. 
-For any $n\in\mathbb{N}$ $n$ even, $q_n\in A[x_0]$ and $q_n\not\in B[x_0]$. 
-For any $n\in\mathbb{N}$ $n$ odd, $q_n\not\in A[x_0]$ and $q_n\in B[x_0]$.\\
-So $r\vdash A=B$, for any $n\in\mathbb{N}$, $q_n\not\vdash A=B$ and $p\not\vdash A=B$.
-So
-\[
-\{p\in P:p\vdash A=B\}=\{r\}.
-\]
-So $(\forall q\geq p.(\exists r\geq q.r\in\{p\in P:r\vdash A=B\}))$ but $p\not\in\{p\in P:p\vdash A=B\}$.
-So $\{p\in P:p\vdash A=B\}\not\in\text{RO}(P)$.
+So $\{p\in P: p\vdash A=B\}\in\text{RO}(P)$.
 
 \end{proof}
 
@@ -276,29 +249,30 @@ Then $\{p\in P:p\vdash x\in A\}$ is a set and in $\text{RO}(P)$.
 
 \end{definition}
 
-\subsection{Questions regarding Framework}
 
-\begin{enumerate}
-    \item How to finish the proof that for any sets $A,B$ $\{p\in P:p\vdash A=B\}\in\text{RO}(P)$? 
-    Is the counterexample correct?
-    \item Rest of the construction with generic filters analogously to ZFC?
-    \item Is defining names necessary for this construction?
-    \item "... we will reinterpret all those names which do not respect the new identity criterion as urelements." 
-    What exactly is meant by "reinterpret"?
-    In what ways can a name not respect the new identity?
-\end{enumerate}
+\section{Independence of CH}
 
-\section{CH}
+\subsection{NFU+CH is consistent}
 
-How does the independence proof of CH work?
+\begin{theorem}
+There exsists a Model $\mathcal{M}$ s.t. $\mathcal{M}\models\text{NFU+CH}$.
+\end{theorem}
+\begin{proof}
+\underline{Skeleton Proof}: 
+
+\end{proof}
+
+\subsection{NFU+$\neg$CH is consistent}
+
+\begin{theorem}
+There exsists a Model $\mathcal{M}$ s.t. $\mathcal{M}\models\text{NFU+$\neg$CH}$. 
+\end{theorem}
+\begin{proof}
+\underline{Skeleton Proof}:
+    
+\end{proof}
 
 \section{Iterated Forcing}
-
-Assuming we work in a model $M$ of NFU+Counting, forcing with $\leq$ with domain $P$ creates a model $M_1$ of NFU+Counting+Statement1 and forcing with $\leq'$ with domain $P'$ creates a model $M_2$ of NFU+Counting+Statement2. 
-Since forcing necessitates $\leq,\leq',P,P'$ being strongly Cantorian, iterated forcing necessitates $\leq',P'$ being strongly Cantorian in $M_1$. 
-Are there any preservation statements regarding s.c.?\\
-\\
-Since $p\vdash\textbf{set($A$)}$ is only defined for names and names are necessarily sets, once a class is a pure class it stays a pure class for all eternity.
 
 
 
