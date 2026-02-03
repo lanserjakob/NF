@@ -1,0 +1,43 @@
+\begin{theorem}
+Let $A$ and $B$ be sets, then $\{p\in P:p\vdash A=B\}$ is a set and in $\text{RO}(P)$.
+\end{theorem}
+\begin{proof}
+The formula characterizing $\{p\in P:p\vdash A=B\}$ is of the form
+\begin{align*}
+&(\forall q\geq p.(\forall x.(x,q)\in A\equiv(x,q)\in B))\\
+\text{equivalently }&(\forall q.((p,q)\in\leq\rightarrow \forall x.((x,q)\in A\equiv(x,q)\in B))).
+\end{align*}
+Define the stratification
+\begin{align*}
+t:V\rightarrow\mathbb{N}, t(x)=t(q)=t(p)=t((x,q))=t((p,q))=&n,\\
+t(A)=t(B)=t(\leq)=&n+1,
+\end{align*}
+for some $n\in\mathbb{N}$. 
+So $\{p\in P:p\vdash A=B\}$ is a set.\\
+\\
+Let $p\in\{p\in P:p\vdash A=B\}$, $q\geq p, r\geq q$. 
+Since $(P,\leq)$ is a poset, $r\geq p$. 
+By definition of $p\vdash A=B$, $\forall x.r\in A[x]\equiv r\in B[x]$. 
+Since $r$ was chosen arbitrarily, $q\vdash A=B$.\\
+\\
+Let $p\in P$ satisfy
+\[
+(\forall q\geq p.(\exists r\geq q.r\in \{p\in P:p\vdash A=B\})).
+\]
+Assume $p\not\vdash A=B$. 
+Then there exists w.l.o.g. a $q\geq p$ and a set $x$ s.t. $q\in A[x]$ and $q\not\in B[x]$. 
+Since $B[x]$ is regular open and $q\not\in B[x]$, there exists an $s\geq q$ s.t. $s\not\in B[x]$ and $(\forall t\geq s.t\not\in B[x])$. 
+Since $(P,\leq)$ is a poset, $s\geq p$.
+So there exists an $r\geq s$ s.t. $r\vdash A=B$. 
+So 
+\[
+r\in A[x]\equiv r\in B[x].
+\]
+Since $r\geq s$, $r\not\in B[x]$. 
+Since $r\geq q$, $q\in A[x]$ and $A[x]$ is upwards closed, $r\in A[x]$. 
+Contradiction to $r\vdash A=B$. 
+So $p\vdash A=B$.\\
+\\
+So $\{p\in P: p\vdash A=B\}\in\text{RO}(P)$.
+
+\end{proof}
