@@ -1,0 +1,86 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,textwidth=150mm,top=30mm,textheight=237mm]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts} 
+\usepackage{mathdots}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{listings}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{scalerel,stackengine}
+\usepackage{tikz-cd}
+
+
+\stackMath
+\newcommand\reallywidehat[1]{%
+\savestack{\tmpbox}{\stretchto{%
+  \scaleto{%
+    \scalerel*[\widthof{\ensuremath{#1}}]{\kern-.05pt\bigwedge\kern-.05pt}%
+    {\rule[-\textheight/2]{1ex}{\textheight}}%WIDTH-LIMITED BIG WEDGE
+  }{\textheight}% 
+}{0.5ex}}%
+\stackon[1pt]{#1}{\tmpbox}%
+}
+\parskip 1ex
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}[definition]{Example}
+\newtheorem{examples}[definition]{Examples}
+
+\theoremstyle{plain}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+
+\newenvironment{claim}[1]{\par\noindent\underline{Claim:}\space#1}{}
+\newenvironment{claimproof}[1]{\par\noindent\textit{Proof:}\space#1}{\hfill $\square$}
+
+\usepackage{mathtools}
+\usepackage{bm}
+\DeclarePairedDelimiterX{\inp}[2]{\langle}{\rangle}{#1, #2}
+\usepackage[backend=bibtex,style=alphabetic,natbib=true]{biblatex}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+
+\makeatletter
+\newcommand{\superimpose}[2]{{%
+  \ooalign{%
+    \hfil$\m@th#1\@firstoftwo#2$\hfil\cr
+    \hfil$\m@th#1\@secondoftwo#2$\hfil\cr
+  }%
+}}
+
+\newcommand\blankpage{% comando pagina vuota
+    \clearpage
+    \null
+    \thispagestyle{empty}%
+    \clearpage
+}
+
+
+
+\begin{document}
+
+\begin{enumerate}
+    \item On page 342, line 8, should it read “... which either force $\phi$ or force $\neg\phi$ ...”?
+    \item At the beginning of chapter 3.10 you mention that the presentation follows ideas from  model theory of constructive logic and that you avoid the usual mutual recursion between the forcing definitions of membership and equality, albeit at “some other costs.”
+    Could you elaborate on what you see as the advantages of this approach, and what the corresponding costs are?
+    \item Did you obtain the NF construction by adapting this forcing framework? 
+    If so, could you outline the main idea of the derivation?
+    \item In Chapter 3.11, after introducing the restriction to names with support in order to obtain the independence of the Axiom of Choice, you write:
+    "It is technically exciting to show that our forcing constructions go through if we only allow use of names with support in this sense." 
+    Could you elaborate on which parts of the forcing construction require additional work under this support restriction, and what makes this aspect technically interesting?
+\end{enumerate}
+
+\end{document}
