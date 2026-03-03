@@ -74,10 +74,9 @@
 
 \begin{enumerate}
     \item On page 342, line 8, should it read “... which either force $\phi$ or force $\neg\phi$ ...”?
-    \item At the beginning of chapter 3.10 you mention that the presentation follows ideas from  model theory of constructive logic and that you avoid the usual mutual recursion between the forcing definitions of membership and equality, albeit at “some other costs.”
+    \item At the beginning of Chapter 3.10 you mention that the presentation follows ideas from  model theory of constructive logic and that you avoid the usual mutual recursion between the forcing definitions of membership and equality, albeit at “some other costs.”
     Could you elaborate on what you see as the advantages of this approach, and what the corresponding costs are?
-    \item Did you obtain the NF construction by adapting this forcing framework? 
-    If so, could you outline the main idea of the derivation?
+    \item Does the forcing framework developed here relate to the construction used in your work on NF/NFU? Was one adapted from the other, or do they share a common underlying idea?
     \item In Chapter 3.11, after introducing the restriction to names with support in order to obtain the independence of the Axiom of Choice, you write:
     "It is technically exciting to show that our forcing constructions go through if we only allow use of names with support in this sense." 
     Could you elaborate on which parts of the forcing construction require additional work under this support restriction, and what makes this aspect technically interesting?
