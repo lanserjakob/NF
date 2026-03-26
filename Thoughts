@@ -208,20 +208,18 @@ Since $r$ was chosen arbitrarily, $q\vdash A=B$.\\
 \\
 Let $p\in P$ satisfy
 \[
-(\forall q\geq p.(\exists r\geq q.r\in \{p\in P:p\vdash A=B\})).
+\forall q\geq p.(\exists r\geq q.(r\in \{p\in P:p\vdash A=B\})).
 \]
-Assume $p\not\vdash A=B$. 
-Then there exists w.l.o.g. a $q\geq p$ and a set $x$ s.t. $q\in A[x]$ and $q\not\in B[x]$. 
-Since $B[x]$ is regular open and $q\not\in B[x]$, there exists an $s\geq q$ s.t. $s\not\in B[x]$ and $(\forall t\geq s.t\not\in B[x])$. 
-Since $(P,\leq)$ is a poset, $s\geq p$.
+Let $q\geq p$ and $x$ be a set.  
+We want to show that $q\in A[x]\Leftrightarrow q\in B[x]$.\\
+$\underline{\Rightarrow}$: Let $q\in A[x], s\geq q$. 
+Since $(P,\leq)$ is a poset, $s\geq p$. 
 So there exists an $r\geq s$ s.t. $r\vdash A=B$. 
-So 
-\[
-r\in A[x]\equiv r\in B[x].
-\]
-Since $r\geq s$, $r\not\in B[x]$. 
-Since $r\geq q$, $q\in A[x]$ and $A[x]$ is upwards closed, $r\in A[x]$. 
-Contradiction to $r\vdash A=B$. 
+Since $A[x]$ is upwards closed, $r\in A[x]$. 
+So $r\in B[x]$. 
+Since $B[x]$ is regular, $q\in B[x]$.\\
+$\underline{\Leftarrow}$: Let $q\in B[x]$. 
+Then $q\in A[x]$ follows analogously.\\
 So $p\vdash A=B$.\\
 \\
 So $\{p\in P: p\vdash A=B\}\in\text{RO}(P)$.
@@ -274,11 +272,24 @@ Let $p\in\{p\in P:p\vdash\text{set}(A)\}, q\geq p, r\geq q$.
 Since $(P,\leq)$ is a poset, $r\geq p$. 
 By definition of $p\vdash\text{set}(A),$
 \[
-\forall xy.((r\in A[x])\land(p\vdash x=y))\rightarrow r\in A[y].
+\forall xy.((r\in A[x])\land(r\vdash x=y))\rightarrow r\in A[y].
 \]
 Since $r$ was chosen arbitrarily, $q\vdash\text{set}(A)$.\\
 \\
-
+Let $p\in P$ satisfy
+\[
+\forall q\geq p.(\exists r\geq q.(r\in\{p\in P:p\vdash\text{set}(A)\})).
+\]
+Let $q\geq p$ be s.t. $q\in A[x]$ and $q\vdash x=y$ and $s\geq q$. 
+Since $(P,\leq)$ is a poset, $s\geq p$. 
+So there exists an $r\geq s$ s.t. $r\vdash\text{set}(A)$. 
+Since $r\geq q$, $r\in A[x]$ and $r\vdash x=y$. 
+So $r\in A[y]$. 
+Since $A[y]$ is regular, $q\in A[y]$. 
+So $q\vdash A[y]$. 
+So $q\vdash\text{set}(A)$\\
+\\
+So $\{p\in P:p\vdash\text{set}(A)\}\in\text{RO}(A)$.
 \end{proof}
 
 \begin{definition}
@@ -319,28 +330,35 @@ Define the stratification
 for some $n\in\mathbb{N}$. Then $\{p\in P:p\vdash x\in A\}$ is a set.\\
 \\
 Let $p\in\{p\in P:p\vdash x\in A\}, q\geq p$. 
-By definition $p\in A[x]$ and $p\in \{p\in P:p\vdash\text{set}(A)\}$. 
-Since $A[x]$ and $\{p\in P:p\vdash\text{set}(A)\}$ are in $\text{RO}(P)$, $q\in A[x]$ and $q\in \{p\in P:p\vdash\text{set}(A)\}$. 
+Then $p\in A[x]$ and $p\in \{p\in P:p\vdash\text{set}(A)\}$. 
+Since $A[x],\{p\in P:p\vdash\text{set}(A)\}\in\text{RO}(P)$, $q\in A[x]$ and $q\in \{p\in P:p\vdash\text{set}(A)\}$. 
 So $q\in\{p\in P:p\vdash x\in A\}$.\\
 \\
+Let $p\in P$ satisfy
+\[
+\forall q\geq p.(\exists r\geq q.(r\in\{p\in P:p\vdash x\in A\})).
+\]
+Let $q\geq p$. 
+Then there exists an $r\geq q$ s.t. $r\vdash x\in A$. 
+So $r\in A[x]$ and $r\vdash\text{set}(A)$. 
+Since $A[x],\{p\in P:p\vdash\text{set}(A)\}\in\text{RO}(P)$, $p\in A[x]$ and $p\vdash\text{set}(A)$. 
+So $p\vdash x\in A$.\\
+\\
+So $\{p\in P:p\vdash x\in A\}\in\text{RO}(P)$.
 \end{proof}
 
 \begin{definition}
-
+Let $p\in P$ and $\phi,\psi$ be sentences. 
+Define
+\begin{align*}
+&p\vdash\phi\land\psi\text{ iff }(p\vdash\phi)\land(p\vdash\psi),\\
+&p\vdash\neg\phi\text{ iff }(\forall q\geq p.\neg(p\vdash\phi)),\\
+&p\vdash(\forall x.\phi)\text{ iff }(\forall a.(p\vdash\phi[a/x])).  
+\end{align*}
 \end{definition}
 
 
 \section{Independence of CH}
-
-\subsection{NFU+CH is consistent}
-
-\begin{theorem}
-There exsists a Model $\mathcal{M}$ s.t. $\mathcal{M}\models\text{NFU+CH}$.
-\end{theorem}
-\begin{proof}
-\underline{Skeleton Proof}: 
-
-\end{proof}
 
 \subsection{NFU+$\neg$CH is consistent}
 
@@ -348,7 +366,6 @@ There exsists a Model $\mathcal{M}$ s.t. $\mathcal{M}\models\text{NFU+CH}$.
 There exsists a Model $\mathcal{M}$ s.t. $\mathcal{M}\models\text{NFU+$\neg$CH}$. 
 \end{theorem}
 \begin{proof}
-\underline{Skeleton Proof}:
     
 \end{proof}
 
