@@ -86,7 +86,7 @@ A is strongly Cantorian (s.c.) iff
 is a set.
 \end{definition}
 
-We can shift the type of elements of an s.c. set arbitrarily by substitution.
+We may typeshift s.c. variables within stratified subformulas.
 
 \begin{definition}
 Let $P$ be s.c. and $\leq\subseteq P\times P$ be s.c. 
@@ -103,7 +103,7 @@ We define the set $\text{RO}(P)$ of regular open subsets of $P$ as the subsets o
 \end{enumerate}
 \end{definition}
 
-Regular open of what topology?
+
 
 \begin{definition}
 Let $(P,\leq)$ be an s.c. poset and $A\in\text{RO}(P)$. 
@@ -113,14 +113,17 @@ A^{\bot}:=\{p\in P:(\forall q\geq p.q\not\in A)\}.
 \]
 \end{definition}
 
-\begin{theorem}
+\begin{lemma}\label{roderive}
 Let $A\in\text{RO}(P)$, $\mathcal{A}\subseteq\text{RO}(P)$. 
-Then it holds that
+Then
 \begin{enumerate}
-    \item $A^{\bot}\in\text{RO}(P)\text{ and }$
+    \item $A^{\bot}\in\text{RO}(P)$,
     \item $\bigcap\mathcal{A}\in\text{RO}(P)$.
 \end{enumerate}
-\end{theorem}
+\end{lemma}
+
+
+
 \begin{proof}
 \begin{enumerate}
     \item Let $p\in A^{\bot}$, $q\geq p$, $r\geq q$. Since $\leq$ is a partial order, $r\geq p$. So $r\not\in A$. So $q\in A^{\bot}$.\\
@@ -140,7 +143,7 @@ Then it holds that
 \end{enumerate}
 \end{proof}
 
-
+Note that \ref{roderive} is also applicable to regular open classes.
 
 \subsection{Forcing Notion}
 
@@ -164,13 +167,13 @@ v, & \text{if there exists a unique $v\in\text{RO}(P)$ s.t. $(x,v)\in A$},\\
 Let $p\in P$, $A,B$ be sets. 
 Define
 \[
-p\vdash A=B\text{ iff }(\forall q\geq p.(\forall x.q\in A[x]\equiv B[x])).
+p\vdash A=B\text{ iff }(\forall q\geq p.(\forall x.q\in A[x]\equiv q\in B[x])).
 \]
 \end{definition}
 
 
 
-\begin{theorem}
+\begin{theorem}\label{equalinro}
 Let $A$ and $B$ be sets, then $\{p\in P:p\vdash A=B\}$ is a set and in $\text{RO}(P)$.
 \end{theorem}
 \begin{proof}
@@ -230,15 +233,13 @@ So $\{p\in P: p\vdash A=B\}\in\text{RO}(P)$.
 Let $p\in P$, $A$ be a set. 
 Define
 \[
-p\vdash\text{set}(A)\text{ iff }\forall q\geq p.(\forall xy.((q\in A[x])\land(p\vdash x=y))\rightarrow q\in A[y]).
+p\vdash\text{set}(A)\text{ iff }\forall q\geq p.(\forall xy.((q\in A[x])\land(q\vdash x=y))\rightarrow q\in A[y]).
 \]
 \end{definition}
 
-$x\in A$ and $x=y$ but $y\not\in A$ means $A$ does not respect the new equality.\\
-\\
-$p,q\in P$ and $P$ s.c. is used for stratification.
 
-\begin{theorem}
+
+\begin{theorem}\label{setinro}
 Let $A$ be a set. 
 Then $\{p\in P:p\vdash\text{set}(A)\}$ is a set and in $\text{RO}(P)$.
 \end{theorem}
@@ -289,8 +290,10 @@ Since $A[y]$ is regular, $q\in A[y]$.
 So $q\vdash A[y]$. 
 So $q\vdash\text{set}(A)$\\
 \\
-So $\{p\in P:p\vdash\text{set}(A)\}\in\text{RO}(A)$.
+So $\{p\in P:p\vdash\text{set}(A)\}\in\text{RO}(P)$.
 \end{proof}
+
+$P$ s.c. is used for stratification.
 
 \begin{definition}
 Let $p\in P$, $A,x$ be sets. 
@@ -300,7 +303,7 @@ p\vdash x\in A\text{ iff }p\in A[x]\land p\vdash\text{set}(A).
 \]
 \end{definition}
 
-\begin{theorem}
+\begin{theorem}\label{ininro}
 Let $A,x$ be sets. 
 Then $\{p\in P:p\vdash x\in A\}$ is a set and in $\text{RO}(P)$.
 \end{theorem}
@@ -347,30 +350,86 @@ So $p\vdash x\in A$.\\
 So $\{p\in P:p\vdash x\in A\}\in\text{RO}(P)$.
 \end{proof}
 
+$P$ s.c. is used for stratification.
+
 \begin{definition}
 Let $p\in P$ and $\phi,\psi$ be sentences. 
 Define
 \begin{align*}
 &p\vdash\phi\land\psi\text{ iff }(p\vdash\phi)\land(p\vdash\psi),\\
-&p\vdash\neg\phi\text{ iff }(\forall q\geq p.\neg(p\vdash\phi)),\\
+&p\vdash\neg\phi\text{ iff }(\forall q\geq p.\neg(q\vdash\phi)),\\
 &p\vdash(\forall x.\phi)\text{ iff }(\forall a.(p\vdash\phi[a/x])).  
 \end{align*}
 \end{definition}
 
 
-\section{Independence of CH}
 
-\subsection{NFU+$\neg$CH is consistent}
+\begin{lemma}\label{roremains}
+    Let $\phi$ be a sentence. 
+    Then $\{p\in P:p\vdash\phi\}$ is regular open. 
+\end{lemma}
 
-\begin{theorem}
-There exsists a Model $\mathcal{M}$ s.t. $\mathcal{M}\models\text{NFU+$\neg$CH}$. 
+
+
+\begin{proof}
+    Proof by induction over the complexity of $\phi$.\\
+    \underline{Induction base}: By \ref{equalinro} and \ref{ininro}, all atomic formulas are in $\text{RO}(P)$. 
+    \\
+    \underline{Induction assumption}: The classes $\{p\in P:p\vdash\phi\}$ and $\{p\in P:p\vdash\psi\}$ are regular open for the formulas $\phi$ and $\psi$.\\
+    \underline{Induction step}: \underline{Conjunction}: Since
+    \[
+    \{p\in P:p\vdash\phi\land\psi\}=\{p\in P:p\vdash\phi\}\cap\{p\in P:p\vdash\psi\},
+    \]
+    regularity of $\{p\in P:p\vdash\phi\cap\psi\}$ follows immediately from \ref{roderive}.\\
+    \underline{Negation}: Since
+    \begin{align*}
+    \{p\in P:p\vdash\neg\phi\}&=\{p\in P:(\forall q\geq p.\neg(q\vdash\phi))\}\\
+    &=\{p\in P:p\not\in\{r\in P:r\vdash\phi\}\}\\
+    &=\{p\in P:p\vdash\phi\}^\bot,
+    \end{align*}
+    regularity of $\{p\in P:p\vdash\neg\phi\}$ follows immediately from \ref{roderive}.\\
+    \underline{Universality}: Since
+    \begin{align*}
+        \{p\in P:p\vdash(\forall x.\phi)\}&=\{p\in P:(\forall a.(p\vdash\phi[a/x]))\}\\
+        &=\bigcap_{a\in V}\{p\in P:p\vdash\phi[a/x]\},
+    \end{align*}
+    regularity of $\{p\in P:p\vdash(\forall x.\phi)\}$ follows immediately from \ref{roderive}.
+\end{proof}
+
+
+
+\begin{lemma}
+    Let $\phi$ be a sentence and $p\in P$. 
+    If $p\vdash\phi$ does not hold true, then there exists a $q\geq p$ s.t. $q\vdash\neg\psi$.
+\end{lemma}
+
+
+
+\begin{proof}
+    By \ref{roremains} $\{p\in P:p\vdash\phi\}$ is regular open. 
+    Assume $p\not\in\{p\in P:p\vdash\phi\}$. 
+    By the regularity condition, there exists a $q\geq p$ s.t. $\forall r\geq q.\neg(r\vdash\phi)$, 
+    By definition $q\vdash\neg\phi$.
+\end{proof}
+
+
+\begin{theorem}[Forcing Theorem]
+    If $p\vdash\phi$ and $\psi$ is a classical logical consequence of $\phi$, then $p\vdash\psi$.
 \end{theorem}
+
+
+
 \begin{proof}
     
 \end{proof}
 
-\section{Iterated Forcing}
 
+
+\section{Independence of CH}
+
+
+
+\section{Iterated Forcing}
 
 
 
