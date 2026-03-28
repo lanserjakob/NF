@@ -1,0 +1,308 @@
+/-!
+# NF/NFU Stratification Checker (Lean 4)
+
+A formula of first-order logic is **stratified** (in the sense of Quine's
+New Foundations) if one can assign a natural number — a **relative type** —
+to each variable such that the following constraints hold:
+
+  • For `x ∈ y`:  type(y) = type(x) + 1
+  • For `x = y`:  type(x) = type(y)
+
+Logical connectives (¬, ∧, ∨, →, ↔) and quantifiers (∀, ∃) simply
+propagate constraints from their subformulas without adding new ones.
+
+The algorithm performs a single pass over the formula (constraint
+propagation). It returns either a valid typing environment or a precise
+error message explaining why stratification fails.
+-/
+
+-- ============================================================
+-- 1.  BASE TYPES
+-- ============================================================
+
+abbrev VarName := String
+
+/-- Terms: named variables or individual constants -/
+inductive Term where
+  | var   : VarName → Term
+  | const : String  → Term
+  deriving Repr, BEq, Inhabited
+
+/-- Formulas of first-order logic (NF-style) -/
+inductive Formula where
+  | mem    : Term    → Term    → Formula   -- t₁ ∈ t₂
+  | eq     : Term    → Term    → Formula   -- t₁ = t₂
+  | neg    : Formula → Formula             -- ¬φ
+  | conj   : Formula → Formula → Formula  -- φ ∧ ψ
+  | disj   : Formula → Formula → Formula  -- φ ∨ ψ
+  | impl   : Formula → Formula → Formula  -- φ → ψ
+  | iff    : Formula → Formula → Formula  -- φ ↔ ψ
+  | forallF: VarName → Formula → Formula  -- ∀x. φ
+  | existsF: VarName → Formula → Formula  -- ∃x. φ
+  deriving Repr
+
+-- ============================================================
+-- 2.  TYPING ENVIRONMENT
+-- ============================================================
+
+/-- Maps variable names to their relative type.
+    We use Int (rather than Nat) to avoid underflow when computing
+    type(x) = type(y) - 1 before type(y) is known. -/
+abbrev TypEnv := List (VarName × Int)
+
+namespace TypEnv
+
+def lookup (env : TypEnv) (x : VarName) : Option Int :=
+  env.find? (·.1 == x) |>.map (·.2)
+
+/-- Attempt to assign type t to variable x.
+    Unknown → insert.  Already known → check consistency. -/
+def assign (env : TypEnv) (x : VarName) (t : Int) : Option TypEnv :=
+  match env.lookup x with
+  | none    => some ((x, t) :: env)
+  | some t' => if t == t' then some env else none
+
+end TypEnv
+
+-- ============================================================
+-- 3.  ERROR MESSAGES
+-- ============================================================
+
+inductive StratError where
+  | typeConflict : VarName → Int → Int → StratError
+  -- Variable x already has type t₁ but is required to have type t₂
+  | selfMember   : VarName → StratError
+  -- x ∈ x cannot be stratified
+  deriving Repr
+
+def StratError.toString : StratError → String
+  | .typeConflict x t₁ t₂ =>
+      s!"Type conflict for '{x}': already has type {t₁}, but type {t₂} is required"
+  | .selfMember x =>
+      s!"'{x} ∈ {x}' is not stratifiable (self-membership)"
+
+-- ============================================================
+-- 4.  STRATIFICATION ALGORITHM
+-- ============================================================
+
+abbrev StratResult := Except StratError TypEnv
+
+/-- Assign a specific type to a term.
+    Constants are type-flexible (no entry needed). -/
+def requireType (env : TypEnv) (t : Term) (ty : Int) : StratResult :=
+  match t with
+  | .const _ => .ok env
+  | .var x   =>
+    match env.assign x ty with
+    | some e => .ok e
+    | none   => .error (.typeConflict x (env.lookup x |>.getD 0) ty)
+
+/-- Propagate type constraints through formula φ. -/
+partial def check (env : TypEnv) : Formula → StratResult
+
+  -- ── Membership ──────────────────────────────────────────
+  | .mem (.var x) (.var y) =>
+    if x == y then .error (.selfMember x)
+    else match env.lookup x, env.lookup y with
+      | some tx, some ty =>
+        if ty == tx + 1 then .ok env
+        else .error (.typeConflict y ty (tx + 1))
+      | some tx, none =>
+        match env.assign y (tx + 1) with
+        | some e => .ok e
+        | none   => .error (.typeConflict y 0 (tx + 1))
+      | none, some ty =>
+        match env.assign x (ty - 1) with
+        | some e => .ok e
+        | none   => .error (.typeConflict x 0 (ty - 1))
+      | none, none =>
+        -- Base case: assign x↦0, y↦1
+        match env.assign x 0 with
+        | none      => .ok env
+        | some env' =>
+          match env'.assign y 1 with
+          | some e => .ok e
+          | none   => .error (.typeConflict y 0 1)
+
+  | .mem t₁ t₂ =>
+    -- At least one side is a constant
+    requireType env t₁ 0 >>= (requireType · t₂ 1)
+
+  -- ── Equality ────────────────────────────────────────────
+  | .eq (.var x) (.var y) =>
+    if x == y then .ok env   -- x = x is trivially stratified
+    else match env.lookup x, env.lookup y with
+      | some tx, some ty =>
+        if tx == ty then .ok env
+        else .error (.typeConflict y ty tx)
+      | some tx, none =>
+        match env.assign y tx with
+        | some e => .ok e
+        | none   => .error (.typeConflict y 0 tx)
+      | none, some ty =>
+        match env.assign x ty with
+        | some e => .ok e
+        | none   => .error (.typeConflict x 0 ty)
+      | none, none =>
+        -- Base case: assign both to type 0
+        match env.assign x 0 with
+        | none      => .ok env
+        | some env' =>
+          match env'.assign y 0 with
+          | some e => .ok e
+          | none   => .error (.typeConflict y 0 0)
+
+  | .eq t₁ t₂ =>
+    requireType env t₁ 0 >>= (requireType · t₂ 0)
+
+  -- ── Connectives and quantifiers ─────────────────────────
+  | .neg φ       => check env φ
+  | .conj φ ψ    => check env φ >>= (check · ψ)
+  | .disj φ ψ    => check env φ >>= (check · ψ)
+  | .impl φ ψ    => check env φ >>= (check · ψ)
+  | .iff  φ ψ    => check env φ >>= (check · ψ)
+  | .forallF _ φ => check env φ
+  | .existsF _ φ => check env φ
+
+-- ============================================================
+-- 5.  PUBLIC API
+-- ============================================================
+
+/-- Returns true iff φ is stratified. -/
+def isStratified (φ : Formula) : Bool :=
+  (check [] φ).isOk
+
+/-- Returns the typing environment if φ is stratified, otherwise none. -/
+def getTyping (φ : Formula) : Option TypEnv :=
+  (check [] φ).toOption
+
+/-- Returns a human-readable report string for formula φ. -/
+def report (name : String) (φ : Formula) : String :=
+  let header := s!"[{name}]"
+  match check [] φ with
+  | .ok env =>
+    let typs := env.map (fun (x, t) => s!"{x}↦{t}") |> String.intercalate "  "
+    s!"{header}\n  ✓  stratified\n  Types:  {typs}"
+  | .error e =>
+    s!"{header}\n  ✗  not stratified\n  Reason: {e.toString}"
+
+-- ============================================================
+-- 6.  SMART CONSTRUCTORS  (for readable examples)
+-- ============================================================
+
+def v   (x : String) : Term    := .var x
+def c   (s : String) : Term    := .const s
+def in_ (a b : Term) : Formula := .mem a b
+def eq_ (a b : Term) : Formula := .eq a b
+
+infixl:65 " ∧∧ " => Formula.conj
+infixl:60 " ∨∨ " => Formula.disj
+infixr:55 " →→ " => Formula.impl
+infixl:50 " ↔↔ " => Formula.iff
+
+def all (x : String) (φ : Formula) : Formula := .forallF x φ
+def ex  (x : String) (φ : Formula) : Formula := .existsF x φ
+
+-- ============================================================
+-- 7.  TESTS
+-- ============================================================
+
+section Tests
+
+-- (1)  x ∈ y  →  ✓  x↦0  y↦1
+#eval report "x ∈ y" (in_ (v "x") (v "y"))
+
+-- (2)  x ∈ x  →  ✗  self-membership
+#eval report "x ∈ x" (in_ (v "x") (v "x"))
+
+-- (3)  x ∈ y ∧ y ∈ z  →  ✓  x↦0  y↦1  z↦2
+#eval report "x ∈ y ∧ y ∈ z"
+  (in_ (v "x") (v "y") ∧∧ in_ (v "y") (v "z"))
+
+-- (4)  x ∈ y ∧ y ∈ x  →  ✗  type cycle
+#eval report "x ∈ y ∧ y ∈ x"
+  (in_ (v "x") (v "y") ∧∧ in_ (v "y") (v "x"))
+
+-- (5)  x = y  →  ✓  x↦0  y↦0
+#eval report "x = y" (eq_ (v "x") (v "y"))
+
+-- (6)  x ∈ y ∧ x = z  →  ✓  x↦0  y↦1  z↦0
+#eval report "x ∈ y ∧ x = z"
+  (in_ (v "x") (v "y") ∧∧ eq_ (v "x") (v "z"))
+
+-- (7)  x ∈ y ∧ x = y  →  ✗  x would need types 0 and 1 simultaneously
+#eval report "x ∈ y ∧ x = y"
+  (in_ (v "x") (v "y") ∧∧ eq_ (v "x") (v "y"))
+
+-- (8)  x ∈ y ∧ y = z ∧ z ∈ w  →  ✓  x↦0  y↦1  z↦1  w↦2
+#eval report "x ∈ y ∧ y = z ∧ z ∈ w"
+  (in_ (v "x") (v "y") ∧∧ eq_ (v "y") (v "z") ∧∧ in_ (v "z") (v "w"))
+
+-- (9)  ∀x. x ∈ y → x = z  →  ✓  x↦0  y↦1  z↦0
+#eval report "∀x. x ∈ y → x = z"
+  (all "x" (in_ (v "x") (v "y") →→ eq_ (v "x") (v "z")))
+
+-- (10) Axiom of extensionality:
+--     ∀x y. (∀z. z ∈ x ↔ z ∈ y) → x = y  →  ✓  z↦0  x↦1  y↦1
+#eval report "Extensionality"
+  (all "x" (all "y"
+    (all "z" (in_ (v "z") (v "x") ↔↔ in_ (v "z") (v "y"))
+    →→ eq_ (v "x") (v "y"))))
+
+-- (11) Separation / Comprehension schema:
+--     ∃y. ∀x. x ∈ y ↔ x ∈ z  →  ✓  x↦0  y↦1  z↦1
+#eval report "∃y.∀x. x∈y ↔ x∈z"
+  (ex "y" (all "x" (in_ (v "x") (v "y") ↔↔ in_ (v "x") (v "z"))))
+
+-- (12) Unstratified comprehension (Russell-style):
+--     ∃y. ∀x. x ∈ y ↔ ¬(x ∈ x)  →  ✗
+#eval report "∃y.∀x. x∈y ↔ ¬(x∈x)"
+  (ex "y" (all "x" (in_ (v "x") (v "y") ↔↔ .neg (in_ (v "x") (v "x")))))
+
+end Tests
+
+-- ============================================================
+-- 8.  FORMAL PROPERTIES
+-- ============================================================
+
+/-- Negation preserves stratifiability -/
+theorem neg_preserves_strat (φ : Formula) :
+    isStratified (.neg φ) = isStratified φ := by
+  simp [isStratified, check]
+
+/-- Reflexive equality x = x is always stratified -/
+theorem refl_eq_stratified (x : VarName) :
+    isStratified (.eq (.var x) (.var x)) = true := by
+  simp [isStratified, check, TypEnv.lookup, TypEnv.assign]
+
+-- ============================================================
+-- 9.  MAIN  (lean --run Stratification.lean)
+-- ============================================================
+
+def allTests : List (String × Formula) := [
+  ("x ∈ y",                in_ (v "x") (v "y")),
+  ("x ∈ x",                in_ (v "x") (v "x")),
+  ("x ∈ y ∧ y ∈ z",       in_ (v "x") (v "y") ∧∧ in_ (v "y") (v "z")),
+  ("x ∈ y ∧ y ∈ x",       in_ (v "x") (v "y") ∧∧ in_ (v "y") (v "x")),
+  ("x = y",                 eq_ (v "x") (v "y")),
+  ("x ∈ y ∧ x = z",       in_ (v "x") (v "y") ∧∧ eq_ (v "x") (v "z")),
+  ("x ∈ y ∧ x = y",       in_ (v "x") (v "y") ∧∧ eq_ (v "x") (v "y")),
+  ("Extensionality",
+    all "x" (all "y"
+      (all "z" (in_ (v "z") (v "x") ↔↔ in_ (v "z") (v "y"))
+      →→ eq_ (v "x") (v "y")))),
+  ("∃y.∀x. x∈y ↔ x∈z",
+    ex "y" (all "x" (in_ (v "x") (v "y") ↔↔ in_ (v "x") (v "z")))),
+  ("∃y.∀x. x∈y ↔ ¬(x∈x)",
+    ex "y" (all "x" (in_ (v "x") (v "y") ↔↔ .neg (in_ (v "x") (v "x"))))),
+]
+
+def main : IO Unit := do
+  IO.println ""
+  IO.println "╔══════════════════════════════════════════════════════╗"
+  IO.println "║       NF/NFU  Stratification Checker  (Lean 4)       ║"
+  IO.println "╚══════════════════════════════════════════════════════╝"
+  IO.println ""
+  for (name, φ) in allTests do
+    IO.println (report name φ)
+    IO.println ""
