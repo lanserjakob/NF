@@ -398,7 +398,7 @@ Define
 
 
 
-\begin{lemma}
+\begin{lemma}\label{negprop}
     Let $\phi$ be a sentence and $p\in P$. 
     If $p\vdash\phi$ does not hold true, then there exists a $q\geq p$ s.t. $q\vdash\neg\psi$.
 \end{lemma}
@@ -406,9 +406,8 @@ Define
 
 
 \begin{proof}
-    By \ref{roremains} $\{p\in P:p\vdash\phi\}$ is regular open. 
-    Assume $p\not\in\{p\in P:p\vdash\phi\}$. 
-    By the regularity condition, there exists a $q\geq p$ s.t. $\forall r\geq q.\neg(r\vdash\phi)$, 
+    By \ref{roremains}, $\{p\in P:p\vdash\phi\}$ is regular open. 
+    Since $p\not\in\{p\in P:p\vdash\phi\}$, the regularity condition implies that there exists a $q\geq p$ s.t. $\forall r\geq q.\neg(r\vdash\phi)$, 
     By definition $q\vdash\neg\phi$.
 \end{proof}
 
@@ -420,7 +419,106 @@ Define
 
 
 \begin{proof}
-    
+    Let $\mathcal{M}$ be a model of NFU+Counting, $\leq$ a s.c. poset with s.c. domain $P$ (which exists by the axiom of counting), $p\in P$, $\phi_0,\psi_0$ be sentences s.t. $p\vdash\phi_0$, $\psi_0$ is a classical logical consequence of $\phi_0$ and $p\vdash\psi_0$ does not hold.\\
+    \\
+    We extend the language of NFU to $\text{NFU}^\ast$ by adding constants for:
+    \begin{itemize}
+        \item $\emptyset,\leq,p$,
+        \item each parameter $c$ occuring in $\phi_0$ or $\psi_0$.
+    \end{itemize}
+    Define $\mathcal{M}^\ast$ as $\text{NFU}^\ast$ expansion via canonical interpretation of the constants.\\
+    \underline{1st case}: $\mathcal{M}^\ast$ is countable. 
+    Then $\mathcal{M}_0:=\mathcal{M}^\ast$ is countable.\\
+    \underline{2nd case}: $\mathcal{M}^\ast$ is uncountable. 
+    Since the signature of $\text{NFU}^\ast$ is finite, Löwenheim-Skolem downwards implies that there exists a countable $\mathcal{M}_0\prec\mathcal{M}^\ast$.\\
+    \\
+    \underline{Construction of an auxiliary $\mathcal{L}^\ast$-structure $\mathcal{M}^{p_\infty}$}:\\
+    Since $\mathcal{M}_0$ and $\mathcal{L}^\ast$ are countable, there exists an enumeration $\{v_i\}_{i\in\mathbb{N}}$ of the definable regular open subclasses of $P$. 
+    Define a sequence $\{p_i\}_{i\in\mathbb{N}}$ of elements of $P$ in $\mathcal{M}_0$:
+    \begin{enumerate}
+        \item $p_0:=p$,
+        \item choose a $p_{i+1}$ s.t.
+            \begin{enumerate}
+                \item $p_{i+1}\geq p_i$ and $p_{i+1}\vdash\neg\psi_0$.
+                    By \ref{negprop} such a $p_1$ exists.
+                \item Either $p_{i+1}\in v_i$ or $\forall q\geq p_{i+1}.(q\not\in v_i)$. 
+                    Such a $p_{i+1}$ exists since $v_i$ is regular open.
+            \end{enumerate}
+    \end{enumerate}
+    Define for each sentence $\phi\in\mathcal{L}^\ast$,
+    \[
+    p_\infty\vdash\phi\text{ iff }\exists n.(p_n\vdash\phi)
+    \]
+    Define the $\mathcal{L}^\ast$-structure $\mathcal{M}^{p_\infty}$ with
+    \begin{itemize}
+        \item underlying set $M_0$,
+        \item membership interpreted as $A\in^{p_\infty}B\Leftrightarrow p_\infty\vdash A\in B$,
+        \item equality interpreted as $A=^{p_\infty}B\Leftrightarrow p_\infty\vdash A=B$.
+    \end{itemize}
+    \underline{$=^{p_\infty}$ is a congruence on $\mathcal{M}^{p_\infty}$}:\\
+    Reflexivity, transitivity and symmetry of $p_\infty\vdash A=B$ follows directly from the definition of $p_n\vdash A=B$ and upwards closure for all $n$.\\
+    Let $p_\infty\vdash A=B$ for the rest of this section of the proof.\\
+    Let $p_\infty\vdash A\in C$. 
+    Then there exist $n_1$ and $n_2$ s.t. $p_{n_1}\vdash A=B$, $p_{n_2}\vdash\text{set}(C)$ and $p_{n_2}\in C[A]$. 
+    Let $n:=\text{max}(n_1,n_2)$. 
+    Since $(p_i)_{i\in\mathbb{N}}$ is an ascending sequence, $p_n\vdash A=B$, $p_n\vdash\text{set}(C)$ and $p_n\in C[A]$. 
+    By definition of $\text{set}(C)$, $p_n\in C[B]$. 
+    So $p_n\vdash B\in C$. 
+    So $p_\infty\vdash B\in C$. 
+    $p_\infty\vdash B\in C$ implying $p_\infty\vdash A\in C$ follows analogously.\\
+    So $p_\infty\vdash A\in C$ iff $p_\infty\vdash B\in C$.\\
+    Let $p_\infty\vdash\text{set}(A)$. 
+    Then there exist $n_1$ and $n_2$ s.t. $p_{n_1}\vdash A=B$ and $p_{n_2}\vdash\text{set}(A)$. 
+    Let $n:=\text{max}(n_1,n_2)$. 
+    Since $(p_i)_{i\in\mathbb{N}}$ is an ascending sequence, $p_n\vdash A=B$ and $p_n\vdash\text{set}(A)$. 
+    Let $q\geq p_n$, $q\vdash x=y$ and $q\in B[x]$. 
+    Since $p_n\vdash A=B$, $q\in A[x]$. 
+    Since $p_n\vdash\text{set}(A)$ and $q\vdash x=y$, $q\in A[y]$. 
+    Since $p_n\vdash A=B$, $q\in B[y]$. 
+    So $p_n\vdash\text{set}(B)$. 
+    So $p_\infty\vdash\text{set}(B)$. 
+    $p_\infty\vdash\text{set}(B)$ implying $p_\infty\vdash\text{set}(A)$ follows analogously.\\
+    So $p_\infty\vdash\text{set}(A)$ iff $p_\infty\vdash\text{set}(B)$.\\
+    Let $p_\infty\vdash C\in A$. 
+    Then there exist $n_1$ and $n_2$ s.t. $p_{n_1}\vdash A=B$ and $p_{n_2}\vdash C\in A$. 
+    Let $n:=\text{max}(n_1,n_2)$. 
+    Then $p_n\vdash A=B$ and $p_n\vdash C\in A$. 
+    Since $p_n\vdash\text{set}(A)$, $p_n\vdash\text{set}(B)$. 
+    Since $p_n\vdash A=B$ and $p_n\in A[C]$, $p_n\in B[C]$. 
+    So $p_n\vdash C\in B$. 
+    So $p_\infty\vdash C\in B$. $p_\infty\vdash C\in B$ implying $p_\infty\vdash C\in A$ follows analogously.\\
+    So $p_\infty\vdash C\in A$ iff $p_\infty\vdash C\in B$.\\
+    \\
+    \underline{Construction of the quotient structure $\mathcal{N}$}:\\
+    Since $=^{p_\infty}$ is a congruence on $\mathcal{M}^{p_\infty}$, the structure $\mathcal{N}:=\mathcal{M}^{p_\infty}/=^{p_\infty}$ is well-defined with
+    \begin{itemize}
+        \item underlying set $M_0/=^{p_\infty}$, i.e. equivalence classes $[A]_{=^{p_\infty}}$ for $A\in M_0$,
+        \item $[A]=[B]\Leftrightarrow A=^{p_\infty} B\Leftrightarrow p_\infty\vdash A=B$ for $A,B\in M_0$,
+        \item $[A]\in[B]\Leftrightarrow A\in^{p_\infty} B\Leftrightarrow p_\infty\vdash A\in B$ for $A,B\in M_0$.
+    \end{itemize}
+    \underline{$\mathcal{N}$ is a classical two-valued structure}:\\
+    Let $\psi',\phi'\in\mathcal{L}^\ast$ be sentences.\\
+    Assume $p_\infty\vdash\phi'$ does not hold true. 
+    Then $p_n\vdash\phi'$ does not hold true for all $n$. 
+    Since $\{r\in P:r\vdash\phi'\}$ is regular open, $v_k=\{r\in P:r\vdash\phi'\}$ for some $k$.\\
+    \underline{1st case}: $p_{k+1}\in v_k$. 
+    Contradiction to $p_{n}\vdash\phi'$ does not hold true for all $n$.\\
+    \underline{2nd case}: $\forall q\geq p_{k+1}.(q\not\in v_{k})$. 
+    By definition, $p_{k+1}\vdash\neg\phi'$. 
+    So $p_\infty\vdash\neg\phi'$.\\
+    Assume that $p_\infty\vdash\neg\phi'$. 
+    Then there exists an $n$ s.t. $p_n\vdash\neg\phi'$. 
+    Since $(p_i)_{i\in\mathbb{N}}$ is an ascending sequence and $\{p\in P:p\vdash\neg\phi'\}$ is upwards closed, $p_n\vdash\phi'$ does not hold true for all $n$.\\
+    So $p_\infty\vdash\neg\phi'$ iff $p_\infty\vdash\phi'$ does not hold true.\\
+    By definition $p_\infty\vdash\phi'\land\psi'$ iff $p_\infty\vdash\phi'$ and $p_\infty\vdash\psi'$.\\
+    By definition $p_\infty\vdash(\forall x.\phi')$ iff $(\forall a.(p_\infty\vdash\phi'[a/x]))$.\\
+    \\
+    \underline{$\mathcal{N}$ models $\phi_0$ but not $\psi_0$}:\\
+    Since $p_0\vdash\phi_0$, $p_{\infty}\vdash\phi_0$.
+    So $\mathcal{N}\models\phi_0$. 
+    Since $p_1\vdash\neg\psi_0$, $p_\infty\vdash\neg\psi_0$. 
+    So $\mathcal{N}\not\models\psi_0$. 
+    Contradiction to $\psi_0$ being a classical consequence of $\phi_0$.
 \end{proof}
 
 
