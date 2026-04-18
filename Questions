@@ -1,4 +1,6 @@
 \begin{enumerate}
+    \item Objects can be defined by isomorphism classes instead of representatives, i.e. the number $a$ as the property of containing $a$ elements, the ordinal $\alpha$ as the property of well-ordering a certain amount of objects.\\
+    What are the costs and benefits of such definitions?
     \item \underline{Page 46}: 
     Regarding $L_1'X\neq L_2'X$ it states: 'In fact it will usually turn out to be the case that if anything goes wrong, then $L_1'X>L_2'X$.' 
     What are some examples where $L_1'X<L_2'X$?
